@@ -1,37 +1,57 @@
-import 'package:ecommo/models/product.dart';
 import 'package:flutter/material.dart';
+import 'product.dart';
 
-class Shop extends ChangeNotifier{
+class Shop extends ChangeNotifier {
   final List<Product> _shop = [
-  Product(name: "Rado Watch",
+    Product(
+      name: "Rado Watch",
       price: 3500,
-      description: "The Rado Skeleton watch showcases an innovative design that beautifully reveals its intricate mechanical movement. Crafted with a sleek, lightweight case, the watch features a transparent dial that highlights the craftsmanship and precision of its automatic movement. ",
-     imagepath: 'assets/rado.jpg'
-  ),
-    Product(name: "Smart Watch",
+      description: "Innovative skeleton watch with transparent dial.",
+      imagepath: 'assets/rado.jpg',
+      colorOptions: [Colors.black, Colors.grey, Colors.blue],
+      pricePerCount: 3500,
+    ),
+    Product(
+      name: "Smart Watch",
       price: 4000,
-      description: "The smartwatch combines advanced technology with stylish design, offering a seamless experience for the modern user. With features like fitness tracking, heart rate monitoring, and customizable notifications, it keeps you connected and motivated throughout the day.",
-      imagepath: 'assets/smartwatch.jpg'
+      description: "Advanced smartwatch with fitness tracking and notifications.",
+      imagepath: 'assets/smartwatch.jpg',
+      colorOptions: [Colors.black, Colors.white, Colors.red],
+      pricePerCount: 4000,
+    ),
+    Product(
+      name: "Skmei Watch Original",
+      price: 4000,
+      description: "Meet The World Beyond Future",
+      imagepath: 'assets/skmei.jpg',
+      colorOptions: [Colors.black, Colors.grey, Colors.blue],
+      pricePerCount: 4000,
+    ),
+    Product(
+      name: "Patek Phillipe",
+      price: 4999,
+      description: "You never actually own a Patek Philippe. You merely look after it for the next generation",
+      imagepath: 'assets/pp.jpg',
+      colorOptions: [Colors.black, Colors.grey, Colors.blue],
+      pricePerCount: 4000,
     ),
   ];
-  List <Product> _cart = [];
 
+  final List<Map<Product, Color>> _cart = [];
 
+  List<Product> get shop => _shop;
+  List<Map<Product, Color>> get cart => _cart;
 
-  List <Product> get shop => _shop;
-
-
-  List <Product> get cart => _shop;
-
-
-
-  void addtocart(Product item){
-    _cart.add(item);
-    notifyListeners();
+  void addtocart(Product item, Color color) {
+    bool itemExists = _cart.any((cartItem) => cartItem.keys.first == item && cartItem.values.first == color);
+    if (!itemExists) {
+      _cart.add({item: color});
+      notifyListeners();
+    }
   }
 
-  void removefromcart(Product item){
-    _cart.remove(item);
+  void removefromcart(Product item, Color color) {
+    _cart.removeWhere((cartItem) => cartItem.keys.first == item && cartItem.values.first == color);
     notifyListeners();
   }
 }

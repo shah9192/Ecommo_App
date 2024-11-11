@@ -63,7 +63,8 @@ flutter:
   assets:
   - assets/rado.jpg
   - assets/smartwatch.jpg
-
+  - assets/skmei.jpg
+  - assets/pp.jpg
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
 

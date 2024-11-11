@@ -1,5 +1,5 @@
-import 'package:ecommo/components/mybutton.dart';
 import 'package:flutter/material.dart';
+import 'package:ecommo/components/mybutton.dart';
 
 class IntroPage extends StatelessWidget {
   const IntroPage({super.key});
@@ -7,12 +7,12 @@ class IntroPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       body: SizedBox(
-        width: double.infinity, // Make sure the Column takes full width
+        width: double.infinity,
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center, // Center vertically
-          crossAxisAlignment: CrossAxisAlignment.center, // Center horizontally
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             // logo
             Icon(
@@ -23,7 +23,7 @@ class IntroPage extends StatelessWidget {
 
             const SizedBox(height: 25),
 
-            Text(
+            const Text(
               "Welcome To Ecommoo!",
               style: TextStyle(
                 color: Colors.black,
