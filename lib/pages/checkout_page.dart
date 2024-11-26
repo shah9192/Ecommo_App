@@ -35,7 +35,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
       // Send data to API
       try {
         final response = await http.post(
-          Uri.parse('http://192.168.100.106:3000/checkout'),
+          Uri.parse('http://127.0.0.1:3000/checkout'),
           headers: {'Content-Type': 'application/json'},
           body: jsonEncode(checkoutData),
         );

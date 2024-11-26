@@ -7,24 +7,60 @@ import '../models/product.dart';
 import '../models/shop.dart';
 import 'cart_page.dart';
 
-class ShopPage extends StatelessWidget {
+class ShopPage extends StatefulWidget {
   const ShopPage({super.key});
+
+  @override
+  State<ShopPage> createState() => _ShopPageState();
+}
+
+class _ShopPageState extends State<ShopPage> {
+  String searchQuery = "";
 
   @override
   Widget build(BuildContext context) {
     final products = context.watch<Shop>().shop;
+    final filteredProducts = products.where((product) {
+      return product.name.toLowerCase().contains(searchQuery.toLowerCase());
+    }).toList();
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.pink, Colors.orange],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
         elevation: 0,
-        foregroundColor: Colors.black,
-        title: const Text("Shop Page", style: TextStyle(color: Colors.black)),
+        foregroundColor: Colors.white,
+        title: TextField(
+          onChanged: (value) {
+            setState(() {
+              searchQuery = value;
+            });
+          },
+          style: const TextStyle(color: Colors.white),
+          decoration: InputDecoration(
+            hintText: "Search products...",
+            hintStyle: const TextStyle(color: Colors.white54),
+            filled: true,
+            fillColor: Colors.white.withOpacity(0.2),
+            prefixIcon: const Icon(Icons.search, color: Colors.white),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(20.0),
+              borderSide: BorderSide.none,
+            ),
+          ),
+        ),
         actions: [
           DragTarget<Product>(
             builder: (context, candidateData, rejectedData) {
               return IconButton(
-                icon: const Icon(Icons.shopping_cart, color: Colors.black),
+                icon: const Icon(Icons.shopping_cart, color: Colors.white),
                 onPressed: () {
                   Navigator.push(
                     context,
@@ -34,8 +70,8 @@ class ShopPage extends StatelessWidget {
               );
             },
             onAcceptWithDetails: (product) {
-              // Add the product to the cart when it’s dropped onto the cart icon
-              Provider.of<Shop>(context, listen: false).addtocart(product as Product, Colors.black);
+              Provider.of<Shop>(context, listen: false)
+                  .addtocart(product as Product, Colors.black);
             },
           ),
         ],
@@ -48,7 +84,7 @@ class ShopPage extends StatelessWidget {
           const SizedBox(height: 12),
           const Center(
             child: Text(
-              "Pick from list of premium products",
+              "Pick from a list of premium products",
               style: TextStyle(color: Colors.black),
             ),
           ),
@@ -57,7 +93,7 @@ class ShopPage extends StatelessWidget {
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
-                children: products.map((product) {
+                children: filteredProducts.map((product) {
                   return Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
                     child: MyProductTile(product: product),
