@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';  // Import Firebase Auth
 
 class IntroPage extends StatefulWidget {
   const IntroPage({super.key});
@@ -8,8 +9,13 @@ class IntroPage extends StatefulWidget {
 }
 
 class _IntroPageState extends State<IntroPage> {
-  bool isRegistering = true; // To toggle between Register and Sign In
-  bool isAgree = false; // To track the terms and services checkbox
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController confirmPasswordController = TextEditingController();
+
+  bool isRegistering = true;  // To toggle between Register and Sign In
+  bool isAgree = false;  // To track the terms and services checkbox
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -118,7 +124,7 @@ class _IntroPageState extends State<IntroPage> {
                       ),
                     );
                   } else {
-                    Navigator.pushNamed(context, '/shop_page');
+                    _handleAuth();
                   }
                 },
                 style: ElevatedButton.styleFrom(
@@ -137,32 +143,72 @@ class _IntroPageState extends State<IntroPage> {
     );
   }
 
+  // Handle registration or sign-in
+  Future<void> _handleAuth() async {
+    try {
+      if (isRegistering) {
+        if (passwordController.text == confirmPasswordController.text) {
+          // Register the user
+          await _auth.createUserWithEmailAndPassword(
+            email: emailController.text,
+            password: passwordController.text,
+          );
+
+          // Show a success message
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Registration successful! Please sign in.")),
+          );
+
+          // Switch to Sign In page
+          setState(() {
+            isRegistering = false;
+          });
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Passwords do not match")),
+          );
+        }
+      } else {
+        // Sign in the user
+        await _auth.signInWithEmailAndPassword(
+          email: emailController.text,
+          password: passwordController.text,
+        );
+
+        // After sign-in, navigate to the next screen
+        Navigator.pushNamed(context, '/shop_page');
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error: ${e.toString()}")),
+      );
+    }
+  }
+
+
   // Generate fields dynamically
   List<Widget> _buildFields() {
     if (isRegistering) {
       return [
-        _buildTextField("Name"),
+        _buildTextField("Email", emailController),
         const SizedBox(height: 10),
-        _buildTextField("Username"),
+        _buildTextField("Password", passwordController, obscureText: true),
         const SizedBox(height: 10),
-        _buildTextField("Email"),
-        const SizedBox(height: 10),
-        _buildTextField("Password"),
-        const SizedBox(height: 10),
-        _buildTextField("Confirm Password"),
+        _buildTextField("Confirm Password", confirmPasswordController, obscureText: true),
       ];
     } else {
       return [
-        _buildTextField("Username"),
+        _buildTextField("Email", emailController),
         const SizedBox(height: 10),
-        _buildTextField("Password"),
+        _buildTextField("Password", passwordController, obscureText: true),
       ];
     }
   }
 
   // Single reusable TextField widget
-  Widget _buildTextField(String hintText) {
+  Widget _buildTextField(String hintText, TextEditingController controller, {bool obscureText = false}) {
     return TextField(
+      controller: controller,
       decoration: InputDecoration(
         hintText: hintText,
         hintStyle: const TextStyle(color: Colors.white54),
@@ -173,6 +219,7 @@ class _IntroPageState extends State<IntroPage> {
         fillColor: Colors.grey[900],
       ),
       style: const TextStyle(color: Colors.white),
+      obscureText: obscureText,
     );
   }
 }
